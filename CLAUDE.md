@@ -23,8 +23,27 @@
    - `gap = computed - invoiced` (signed: negative when invoiced exceeds computed).
    - `verdict` is `"RECONCILED"` if `abs(gap) <= tolerance`, else `"DISCREPANCY"`.
    - Edge cases covered by tests (`tests/test_reconciliation.py`): exact match,
-     difference just under tolerance, difference just over tolerance, and a
-     negative gap where invoiced exceeds computed.
+     difference just under tolerance, difference exactly at tolerance (inclusive
+     boundary), difference just over tolerance, and a negative gap where invoiced
+     exceeds computed.
+
+   `reconcile_csv(path, tolerance=0.01)` applies `reconcile()` to every row of a
+   CSV of line items (columns: `id, computed, invoiced`). Returns
+   `{"reconciled": count, "flagged": count, "details": [...]}` — only flagged
+   rows appear in `details`, since the point is to surface what needs review,
+   not to re-list what already ties out.
+   - Each flagged detail is `{"id", "computed", "invoiced", "gap", "error"}`.
+     Rows with a genuine discrepancy have `error: None` and a numeric `gap`.
+   - Rows with a missing column or a non-numeric amount are also counted as
+     flagged (they need a human to look at them too), with `gap: None` and an
+     `error` message describing why — malformed data doesn't crash the run.
+   - An empty file (header only, no data rows) returns `reconciled: 0,
+     flagged: 0, details: []`.
+   - Known limitation: tolerance is absolute only. A fixed `0.01` is too tight
+     for large invoices and too loose for tiny ones; relative tolerance
+     (e.g. percentage-of-amount) is not implemented yet.
+   - Demo: `python reconciliation.py sample_data/line_items.csv` runs it against
+     a small synthetic dataset with a couple of planted discrepancies.
 
    ## How to work in this repo
    - Restate the task and your plan before writing code. If the task is ambiguous,
