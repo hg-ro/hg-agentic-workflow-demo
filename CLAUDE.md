@@ -1,7 +1,7 @@
    # hg-agentic-workflow-demo
 
-   A demo of an agentic coding workflow driven by Claude Code, built to show the
-   Meshly team how spec-first, verification-gated AI development works in practice.
+   A demo of an agentic coding workflow driven by Claude Code, built to show how
+   spec-first, verification-gated AI development works in practice.
 
    ## What we're proving
    That the hard part of agentic work is the spec and the invariants, not the code
@@ -10,11 +10,21 @@
    green and the reasoning is on the record.
 
    ## Stack
-   <!-- TODO: fill in once the first task is chosen, or let `claude /init` detect it -->
-   - Language:
-   - Framework:
-   - Test runner:
-   - Package manager:
+   - Language: Python
+   - Framework: none
+   - Test runner: pytest
+   - Package manager: pip
+
+   ## Specs
+
+   ### Reconciliation (`reconciliation.py`)
+   `reconcile(computed, invoiced, tolerance=0.01)` compares a computed amount
+   against an invoiced amount and returns `(verdict, gap)`.
+   - `gap = computed - invoiced` (signed: negative when invoiced exceeds computed).
+   - `verdict` is `"RECONCILED"` if `abs(gap) <= tolerance`, else `"DISCREPANCY"`.
+   - Edge cases covered by tests (`tests/test_reconciliation.py`): exact match,
+     difference just under tolerance, difference just over tolerance, and a
+     negative gap where invoiced exceeds computed.
 
    ## How to work in this repo
    - Restate the task and your plan before writing code. If the task is ambiguous,
